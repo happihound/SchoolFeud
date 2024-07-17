@@ -4,7 +4,7 @@ import { Container, Row, Col, Table, Button, Input, Form, FormGroup, Label } fro
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Papa from 'papaparse';
 
-export function CSVEditor() {
+export function CSVEditor({ closeEditor }) {
     const [questions, setQuestions] = useState([]);
     const [currentQuestion, setCurrentQuestion] = useState("");
     const [currentAnswers, setCurrentAnswers] = useState(Array(8).fill(""));
@@ -45,17 +45,6 @@ export function CSVEditor() {
         clearCurrentInputs();
     };
 
-    const updateQuestion = (index) => {
-        const updatedQuestions = [...questions];
-        updatedQuestions[index] = {
-            question: currentQuestion,
-            answers: currentAnswers,
-            answerValues: currentAnswerValues
-        };
-        setQuestions(updatedQuestions);
-        clearCurrentInputs();
-    };
-
     const deleteQuestion = (index) => {
         const updatedQuestions = questions.filter((_, i) => i !== index);
         setQuestions(updatedQuestions);
@@ -89,6 +78,7 @@ export function CSVEditor() {
 
     return (
         <Container>
+            <Button color="danger" onClick={closeEditor}>Close Editor</Button>
             <Row>
                 <Col>
                     <h1>CSV Question Editor</h1>

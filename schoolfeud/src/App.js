@@ -1,9 +1,8 @@
 import './App.css';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Container, Row, Col, Table, Button } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Papa from 'papaparse';
-import { Input } from 'reactstrap';
 import { SplashScreen } from './splashscreen';
 import { CSVEditor } from './editor';
 
@@ -13,7 +12,6 @@ function App() {
     const [team2Strikes, setTeam2Strikes] = useState(0);
     const [question, setQuestion] = useState('Please upload a game file to begin');
     const [questionIndex, setQuestionIndex] = useState(0);
-    const [file, setFile] = useState(null);
     const [answers, setAnswers] = useState([
     ]); //placeholder answers
     const [answerValues, setAnswerValues] = useState([
@@ -93,7 +91,6 @@ function App() {
         Papa.parse(file, {
             header: false,
             complete: (results) => {
-                results.data = results.data;
                 const data = results.data[0];
                 setQuestion(data[0]);
                 const loadedAnswers = [];
@@ -106,7 +103,6 @@ function App() {
                 }
                 setAnswers(loadedAnswers);
                 setAnswerValues(loadedAnswerValues);
-                setFile(file);
                 setNumberOfQuestions(results.data.length);
                 setParsedResults(results.data); // Store the parsed results
                 setQuestionIndex(0);
@@ -347,10 +343,15 @@ function App() {
         setShowSplashScreen(false);
     }
 
+    const closeEditorOverride = () => {
+        setShowEditor(false);
+        setShowSplashScreen(true);
+    }
+
     return (
         <span>
             {showEditor && (
-                <CSVEditor />
+                <CSVEditor closeEditor={() => closeEditorOverride()} />
             )}
             {showSplashScreen && (
                 <span style={{ overflow: "hidden" }}>

@@ -1,9 +1,11 @@
 import './App.css';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Container, Row, Col, Table, Button } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Papa from 'papaparse';
 import { Input } from 'reactstrap';
+import { SplashScreen } from './splashscreen';
+import { CSVEditor } from './editor';
 
 function App() {
     const maxStrikes = 3;
@@ -11,7 +13,6 @@ function App() {
     const [team2Strikes, setTeam2Strikes] = useState(0);
     const [question, setQuestion] = useState('Please upload a game file to begin');
     const [questionIndex, setQuestionIndex] = useState(0);
-    const [showPopout, setShowPopout] = useState(false);
     const [file, setFile] = useState(null);
     const [answers, setAnswers] = useState([
     ]); //placeholder answers
@@ -23,8 +24,11 @@ function App() {
     const [currentTeam, setCurrentTeam] = useState(1);
     const [numberOfQuestions, setNumberOfQuestions] = useState(0);
     const [parsedResults, setParsedResults] = useState([]);
-
+    const [popoutVisbility, setPopoutVisibility] = useState(false);
     const popoutWindow = useRef(null);
+
+    const [showSplashScreen, setShowSplashScreen] = useState(true);
+    const [showEditor, setShowEditor] = useState(false);
 
 
 
@@ -89,7 +93,7 @@ function App() {
         Papa.parse(file, {
             header: false,
             complete: (results) => {
-                results.data = results.data.slice(1);
+                results.data = results.data;
                 const data = results.data[0];
                 setQuestion(data[0]);
                 const loadedAnswers = [];
@@ -103,7 +107,7 @@ function App() {
                 setAnswers(loadedAnswers);
                 setAnswerValues(loadedAnswerValues);
                 setFile(file);
-                setNumberOfQuestions(results.data.length - 1);
+                setNumberOfQuestions(results.data.length);
                 setParsedResults(results.data); // Store the parsed results
                 setQuestionIndex(0);
                 setTeam1AnswerIndeces([]);
@@ -137,6 +141,7 @@ function App() {
 
 
     const popOutTeacherPanel = () => {
+        setPopoutVisibility(true);
         if (popoutWindow.current && !popoutWindow.current.closed) {
             popoutWindow.current.focus();
             return;
@@ -198,6 +203,9 @@ function App() {
             listElement.appendChild(listItem);
         });
         content.appendChild(listElement);
+        popoutWindow.current.onbeforeunload = () => {
+            setPopoutVisibility(false);
+        };
     };
 
     const updateContent = (index) => {
@@ -283,56 +291,83 @@ function App() {
             )
     }
 
-    return (
-        <Container xs="12" className="text-center" style={{ marginLeft: '0px', marginRight: '0px', maxWidth: '100%' }}>
-            <Row className="justify-content-center" style={{ margin: 'auto' }}>
-                <h1 className="mt-4"><strong>School Feud</strong></h1>
-            </Row>
-            <Row className="justify-content-center">
-                <Col xs="auto">
-                    <Button onClick={() => loadQuestionByIndex(questionIndex - 1)} disabled={questionIndex === 0}>Previous Question</Button>
-                </Col>
-                <Col xs="auto">
-                    <Input type="file" onChange={handleFileUpload} />
-                </Col>
-                <Col xs="auto">
-                    <Button onClick={() => loadQuestionByIndex(questionIndex + 1)} disabled={questionIndex === numberOfQuestions - 1}>Next Question</Button>
-                </Col>
 
-                <Col xs="auto">
-                    <Button onClick={popOutTeacherPanel}>Teacher Panel</Button>
-                </Col>
-            </Row>
-            {renderTeams()}
-            <Row>
-                <Col className="text-center mt-4" xs="auto" style={{ margin: 'auto' }}>
-                    <h1 style={{ fontSize: '2em', fontWeight: 'bold', textWrap: 'pretty', maxWidth: '90%', margin: 'auto' }}>
-                        Question: <br />
-                        {question}
-                    </h1>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <Table bordered={true} className="mt-4" size="sm" style={{ overflowX: 'hidden' }}>
-                        <tbody>
-                            {[...Array(Math.floor(answers.length / 2) + answers.length % 2)].map((_, i) => (
-                                <tr key={i}>
-                                    <td style={{ width: '2%', fontSize: '1.5em', fontWeight: 'bold', visibility: i * 2 + 1 > answers.length ? 'hidden' : 'visible' }}>
-                                        {i * 2 + 1}
-                                    </td>
-                                    {renderAnswerCell(i * 2)}
-                                    <td style={{ width: '2%', fontSize: '1.5em', fontWeight: 'bold', visibility: i * 2 + 2 > answers.length ? 'hidden' : 'visible' }}>
-                                        {i * 2 + 2}
-                                    </td>
-                                    {renderAnswerCell(i * 2 + 1)}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
-        </Container >
+    const renderGame = () => {
+        return (
+            <Container xs="12" className="text-center" style={{ marginLeft: '0px', marginRight: '0px', maxWidth: '100%' }}>
+                <Button onClick={popOutTeacherPanel} style={{ position: 'absolute', right: '10px', top: '10px' }} disabled={popoutVisbility}>
+                    Teacher Panel
+                </Button>
+                <Row className="justify-content-center" style={{ margin: 'auto' }}>
+                    <h1 className="mt-4"><strong>School Feud</strong></h1>
+                </Row>
+                <Row className="justify-content-center">
+                    <Col xs="auto">
+                        <Button onClick={() => loadQuestionByIndex(questionIndex - 1)} disabled={questionIndex === 0}>Previous Question</Button>
+                    </Col>
+                    <Col xs="auto">
+                        <Button onClick={() => loadQuestionByIndex(questionIndex + 1)} disabled={questionIndex === numberOfQuestions - 1}>Next Question</Button>
+                    </Col>
+                </Row>
+                {renderTeams()}
+                <Row>
+                    <Col className="text-center mt-4" xs="auto" style={{ margin: 'auto' }}>
+                        <h1 style={{ fontSize: '2em', fontWeight: 'bold', textWrap: 'pretty', maxWidth: '90%', margin: 'auto' }}>
+                            Question: <br />
+                            {question}
+                        </h1>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Table bordered={true} className="mt-4" size="sm" style={{ overflowX: 'hidden' }}>
+                            <tbody>
+                                {[...Array(Math.floor(answers.length / 2) + answers.length % 2)].map((_, i) => (
+                                    <tr key={i}>
+                                        <td style={{ width: '2%', fontSize: '1.5em', fontWeight: 'bold', visibility: i * 2 > answers.length ? 'hidden' : 'visible' }}>
+                                            {i * 2 + 1}
+                                        </td>
+                                        {renderAnswerCell(i * 2)}
+                                        <td style={{ width: '2%', fontSize: '1.5em', fontWeight: 'bold', visibility: i * 2 + 1 > answers.length ? 'hidden' : 'visible' }}>
+                                            {i * 2 + 2}
+                                        </td>
+                                        {renderAnswerCell(i * 2 + 1)}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </Col>
+                </Row>
+            </Container >
+        )
+    }
+
+    const showEditorOverride = () => {
+        setShowEditor(true);
+        setShowSplashScreen(false);
+    }
+
+    return (
+        <span>
+            {showEditor && (
+                <CSVEditor />
+            )}
+            {showSplashScreen && (
+                <span style={{ overflow: "hidden" }}>
+
+                    <SplashScreen
+                        onFileUpload={(results) => {
+                            handleFileUpload(results);
+                        }}
+                        onStartGame={() => setShowSplashScreen(false)}
+                        showEditor={() => showEditorOverride()}
+                    />
+                </span>
+            )}
+            {showSplashScreen || showEditor ? null :
+                renderGame()
+            }
+        </span>
     );
 }
 

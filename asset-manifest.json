@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/SchoolFeud/static/css/main.3ea4b6c6.css",
+    "main.js": "/SchoolFeud/static/js/main.52c22e79.js",
+    "static/js/453.1e2e9be9.chunk.js": "/SchoolFeud/static/js/453.1e2e9be9.chunk.js",
+    "index.html": "/SchoolFeud/index.html",
+    "main.3ea4b6c6.css.map": "/SchoolFeud/static/css/main.3ea4b6c6.css.map",
+    "main.52c22e79.js.map": "/SchoolFeud/static/js/main.52c22e79.js.map",
+    "453.1e2e9be9.chunk.js.map": "/SchoolFeud/static/js/453.1e2e9be9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3ea4b6c6.css",
+    "static/js/main.52c22e79.js"
+  ]
+}

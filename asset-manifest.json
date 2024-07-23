@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/SchoolFeud/static/css/main.688d6362.css",
-    "main.js": "/SchoolFeud/static/js/main.abedced9.js",
+    "main.js": "/SchoolFeud/static/js/main.54b94d3c.js",
     "static/js/453.1e2e9be9.chunk.js": "/SchoolFeud/static/js/453.1e2e9be9.chunk.js",
     "index.html": "/SchoolFeud/index.html",
     "main.688d6362.css.map": "/SchoolFeud/static/css/main.688d6362.css.map",
-    "main.abedced9.js.map": "/SchoolFeud/static/js/main.abedced9.js.map",
+    "main.54b94d3c.js.map": "/SchoolFeud/static/js/main.54b94d3c.js.map",
     "453.1e2e9be9.chunk.js.map": "/SchoolFeud/static/js/453.1e2e9be9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.688d6362.css",
-    "static/js/main.abedced9.js"
+    "static/js/main.54b94d3c.js"
   ]
 }
